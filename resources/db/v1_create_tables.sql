@@ -139,19 +139,19 @@ CREATE TABLE IF NOT EXISTS WarehouseSection
 drop table if exists Item;
 CREATE TABLE `Item`
 (
-    `itemID`      INT auto_increment                                            NOT NULL,
-    `itemName`    VARCHAR(100)                                                  NOT NULL,
-    `itemPrice`   INT                                                           NOT NULL,
-    `weight`      INT                                                           NOT NULL,
-    `assemble`    VARCHAR(50)                                                   NOT NULL,
-    `customerName`   VARCHAR(50)                                                   NOT NULL,
-    `material`    VARCHAR(50)                                                   NOT NULL,
-    `volume`      DECIMAL(10, 3) AS (`width` * `height` * `levelHeight`) STORED NOT NULL, -- stored 를 사용한 이유는 조회할때 빠르게 하기 위함입니다. stored 를 사용하지 않으면 기본값인 VIRTUAL을 사용하는데
-    `width`       DECIMAL(10, 2)                                                NOT NULL, -- VIRTUAL을 사용하게 되면 조회 할때마다 부피값 계산을 해서 출력 해주기 때문에 데이터가 엄청 많다는 가정하에 속도가 느릴거 같아 stored를 사용했습니다.
-    `height`      DECIMAL(10, 2)                                                NOT NULL COMMENT '부피를 구하기 위한 세로',
-    `levelHeight` DECIMAL(10, 2)                                                NOT NULL COMMENT '부피를 구하기 위한 높이',
-    `spaceName`   VARCHAR(50)                                                   NOT NULL,
-    `category`    VARCHAR(50)                                                   NOT NULL,
+    `itemID`       INT auto_increment                                            NOT NULL,
+    `itemName`     VARCHAR(100)                                                  NOT NULL,
+    `itemPrice`    INT                                                           NOT NULL,
+    `weight`       INT                                                           NOT NULL,
+    `assemble`     VARCHAR(50)                                                   NOT NULL,
+    `customerName` VARCHAR(50)                                                   NOT NULL,
+    `material`     VARCHAR(50)                                                   NOT NULL,
+    `volume`       DECIMAL(10, 3) AS (`width` * `height` * `levelHeight`) STORED NOT NULL, -- stored 를 사용한 이유는 조회할때 빠르게 하기 위함입니다. stored 를 사용하지 않으면 기본값인 VIRTUAL을 사용하는데
+    `width`        DECIMAL(10, 2)                                                NOT NULL, -- VIRTUAL을 사용하게 되면 조회 할때마다 부피값 계산을 해서 출력 해주기 때문에 데이터가 엄청 많다는 가정하에 속도가 느릴거 같아 stored를 사용했습니다.
+    `height`       DECIMAL(10, 2)                                                NOT NULL COMMENT '부피를 구하기 위한 세로',
+    `levelHeight`  DECIMAL(10, 2)                                                NOT NULL COMMENT '부피를 구하기 위한 높이',
+    `spaceName`    VARCHAR(50)                                                   NOT NULL,
+    `category`     VARCHAR(50)                                                   NOT NULL,
     primary key (itemID)
 );
 
@@ -203,19 +203,20 @@ create table if not exists shipment
 );
 
 drop table if exists Stock;
-CREATE TABLE `Stock` (
-                         `stockID`	INT auto_increment	NOT NULL,
-                         `stockingDate`	DATE	NULL,
-                         `stockingProcess`	VARCHAR(20)	NOT NULL,
-                         `stock_p_quantity`	INT	NOT NULL,
-                         `itemID`	INT	NOT NULL,
-                         `warehouseID`	INT	NULL,
-                         sectionID INT NOT NULL,
-                         `uID`	INT	NOT NULL,
-                         primary key (stockID),
-                         constraint FK_stock_item
-                             foreign key (itemID) references Item (itemID)
-                                 on delete cascade
+CREATE TABLE `Stock`
+(
+    `stockID`          INT auto_increment NOT NULL,
+    `stockingDate`     DATE               NULL,
+    `stockingProcess`  VARCHAR(20)        NOT NULL,
+    `stock_p_quantity` INT                NOT NULL,
+    `itemID`           INT                NOT NULL,
+    `warehouseID`      INT                NULL,
+    sectionID          INT                NOT NULL,
+    `uID`              INT                NOT NULL,
+    primary key (stockID),
+    constraint FK_stock_item
+        foreign key (itemID) references Item (itemID)
+            on delete cascade
 );
 
 

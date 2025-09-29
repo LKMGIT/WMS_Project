@@ -86,7 +86,7 @@ public class Warehouse_Section_Controller_Impl implements Warehouse_Section_Cont
 
     /**
      * 구역 등록 V2
-     * [전체 수정] 대화형으로 창고 구역을 등록하는 로직으로 변경
+     * [전체 수정] 대화형으로 창고 구역을 등록
      */
     @Override
     public WarehouseSection insertSectionV2() throws IOException {
@@ -99,25 +99,25 @@ public class Warehouse_Section_Controller_Impl implements Warehouse_Section_Cont
 
         System.out.println("\n[창고 구역 등록]");
 
-        // 1. 어느 창고에 등록할지 ID를 먼저 받습니다.
+        // 어느 창고에 등록할지 ID를 먼저 받음
         int warehouseId = sectionAdminView.getWarehouseIdInput();
 
-        // 2. 사용자가 'n'을 누를 때까지 구역 추가를 반복합니다.
+        // 관리자가 'n'을 누를 때까지 구역 추가를 반복
         while (true) {
-            // 3. View를 통해 구역 1개의 정보를 받아옵니다.
+            // View 를 통해 구역 1개의 정보를 받아옴
             WarehouseSection newSection = sectionAdminView.insertWarehouseSectionV2();
             newSection.setWarehouseID(warehouseId); // 처음에 입력받은 창고 ID 설정
 
-            // 4. DAO에 등록을 요청하고 결과를 받습니다.
+            // DAO 에 등록을 요청하고 결과를 받음
             Map<String, Integer> result = sectionDAO.insertSectionV2(newSection);
 
             int resultCode = result.get("resultCode");
             int remainingCapacity = result.get("remainingCapacity");
 
-            // 4.1 DAO 가 반환한 결과에서 새로 생성된 구역 ID를 가져옵니다.
+            // DAO 가 반환한 결과에서 새로 생성된 구역 ID를 가져옴
             int newSectionId = result.get("newSectionId");
 
-            // 5. 결과에 따라 메시지를 출력합니다.
+            // 결과에 따라 메시지를 출력
             if (resultCode == 1) { // 성공
                 sectionAdminView.displayMessage(">> '" + newSection.getSectionName() + "' (ID: " + newSectionId + ") 구역 등록 성공");
                 sectionAdminView.displayMessage("   [남은 창고 수용량: " + remainingCapacity + "]");

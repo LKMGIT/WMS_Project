@@ -1,57 +1,39 @@
 package view.notice_view;
 
+import util.input.AdaptersAndHandler.InputHandler;
+import util.input.AdaptersAndHandler.BufferedReaderAdapter;
 import vo.Requests.Notice;
+
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class NoticeAdminView {
-    private final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+    private final InputHandler input;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-
-
-    public int noticeAdminMenu() {
-        while (true) {
-            System.out.println("\n--- 관리자 공지 메뉴 ---");
-            System.out.println("1. 공지 작성");
-            System.out.println("2. 공지 수정");
-            System.out.println("3. 공지 삭제");
-            System.out.println("4. 전체 공지 조회");
-            System.out.println("5. 공지 상세 보기");
-            System.out.println("6. 뒤로가기");
-            System.out.print("메뉴 선택: ");
-            try {
-                int choice = Integer.parseInt(input.readLine().trim());
-                if (choice >= 1 && choice <= 6) return choice;
-            } catch (IOException | NumberFormatException ignored) {}
-            System.out.println("잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
-        }
+    public NoticeAdminView() {
+        this.input = new InputHandler(new BufferedReaderAdapter(new BufferedReader(new java.io.InputStreamReader(System.in))));
     }
 
-    public Notice createNotice() throws IOException {
-        Notice notice = new Notice();
-        System.out.print("제목: ");
-        notice.setN_title(input.readLine().trim());
-        System.out.print("내용: ");
-        notice.setN_content(input.readLine().trim());
+    public int noticeAdminMenu() {
+        return input.readInt(
+                "\n================================ 관리자 공지 메뉴 ================================\n" +
+                        "1. 공지 작성\n2. 공지 수정\n3. 공지 삭제\n4. 전체 공지 조회\n5. 공지 상세 보기\n6. 뒤로가기\n[메뉴 선택]: ",
+                1, 6
+        );
 
-        while (true) {
-            System.out.print("우선순위(숫자, 기본 0): ");
-            String line = input.readLine().trim();
-            if (line.isEmpty()) {
-                notice.setN_priority(0);
-                break;
-            }
-            try {
-                notice.setN_priority(Integer.parseInt(line));
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("숫자만 입력 가능합니다.");
-            }
-        }
+    }
+
+    public Notice createNotice() {
+        Notice notice = new Notice();
+        notice.setN_title(input.readString("제목: ", false));
+        notice.setN_content(input.readString("내용: ", false));
+
+        String priorityStr = input.readString("우선순위(숫자, 기본 0): ", true);
+        notice.setN_priority(priorityStr.isEmpty() ? 0 : Integer.parseInt(priorityStr));
+
         return notice;
     }
 
@@ -73,7 +55,7 @@ public class NoticeAdminView {
             System.out.println("공지사항이 존재하지 않습니다.");
             return;
         }
-        System.out.println("\n--- 공지 상세 ---");
+        System.out.println("\n====================== 공지 상세 ======================");
         System.out.println("ID: " + n.getNoticeID());
         System.out.println("제목: " + n.getN_title());
         System.out.println("내용: " + n.getN_content());
@@ -82,15 +64,7 @@ public class NoticeAdminView {
         System.out.println("우선순위: " + n.getN_priority());
     }
 
-    // 각 동작에서 직접 ID 입력
-    public int inputNoticeID(String action) throws IOException {
-        while (true) {
-            System.out.print(action + "할 공지 ID를 입력해주세요: ");
-            try {
-                return Integer.parseInt(input.readLine().trim());
-            } catch (NumberFormatException e) {
-                System.out.println("ID는 숫자로 입력해주세요.");
-            }
-        }
+    public int inputNoticeID(String action) {
+        return input.readInt(action + "할 공지 ID를 입력해주세요: ", 1, null);
     }
 }

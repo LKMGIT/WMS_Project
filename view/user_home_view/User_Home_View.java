@@ -72,6 +72,10 @@ public class User_Home_View {
                 case 4 -> stockUserView.stockUserMenu();
 
              case 5 -> {shipmentUserView.shipmentUserMenu();}
+
+                case 6 -> {
+                    return;
+                }
             }
 
 

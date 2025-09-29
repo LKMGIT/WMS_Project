@@ -54,12 +54,24 @@ public class RequestDAO {
 
     // --- 사용자 본인 문의 삭제 ---
     public int deleteRequest(int uid, int requestID) {
-        String sql = "DELETE FROM Request WHERE requestID=? AND uid=?";
+        String sql;
+
+
+        if (uid == 0) {
+            sql = "DELETE FROM Request WHERE requestID=?";
+        } else {
+            sql = "DELETE FROM Request WHERE requestID=? AND uid=?";
+        }
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, requestID);
-            pstmt.setInt(2, uid);
+
+            if (uid != 0) {
+                pstmt.setInt(2, uid);
+            }
+
             return pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

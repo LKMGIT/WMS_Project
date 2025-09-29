@@ -1,32 +1,27 @@
 package view.notice_view;
 
+import util.input.AdaptersAndHandler.InputHandler;
+import util.input.AdaptersAndHandler.BufferedReaderAdapter;
 import vo.Requests.Notice;
+
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class NoticeUserView {
+
+    private final InputHandler input;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+    public NoticeUserView() {
+        this.input = new InputHandler(new BufferedReaderAdapter(new BufferedReader(new java.io.InputStreamReader(System.in))));
+    }
 
     public int noticeUserMenu() {
-        while (true) {
-            System.out.println("\n--- 공지사항 메뉴 ---");
-            System.out.println("1. 전체 공지 조회");
-            System.out.println("2. 공지 상세 보기");
-            System.out.println("3. 뒤로가기");
-            System.out.print("메뉴 선택: ");
-
-            try {
-                int choice = Integer.parseInt(input.readLine().trim());
-                if (choice >= 1 && choice <= 3) return choice;
-            } catch (IOException | NumberFormatException e) {
-                // 숫자 아닌 입력 처리
-            }
-            System.out.println("잘못된 입력입니다. 1~3 사이의 숫자를 입력해주세요.");
-        }
+        return input.readInt(
+                "\n====================== 공지사항 메뉴 ======================\n" +
+                        "1. 전체 공지 조회\n2. 공지 상세 보기\n3. 뒤로가기\n[메뉴 선택]: ",
+                1, 3);
     }
 
     public void selectAll(List<Notice> notices) {
@@ -47,7 +42,7 @@ public class NoticeUserView {
             System.out.println("공지사항이 존재하지 않습니다.");
             return;
         }
-        System.out.println("\n--- 공지 상세 ---");
+        System.out.println("\n=================== 공지 상세 ===================");
         System.out.println("ID: " + n.getNoticeID());
         System.out.println("제목: " + n.getN_title());
         System.out.println("내용: " + n.getN_content());

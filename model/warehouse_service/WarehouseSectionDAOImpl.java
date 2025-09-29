@@ -22,8 +22,6 @@ public interface WarehouseSectionDAOImpl {
     Map<String, Integer> insertSectionV2(WarehouseSection section);
 
 
-
-
     /**
      * 특정 창고에 소속된 모든 구역 정보 출력
      * @param warehouseID 구역 정보를 조회할 창고의 ID

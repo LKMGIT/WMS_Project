@@ -34,20 +34,26 @@ public class Request_Controller {
         else userMenuLoop();
     }
 
-    // ---------------------- 관리자 메뉴 ----------------------
     private void adminMenuLoop() throws IOException {
         while (true) {
             int mainChoice = adminView.mainMenu();
-            if (mainChoice == 3) break; // 뒤로가기
-            if (mainChoice == 1) inquiryMenuLoop();
-            else if (mainChoice == 2) boardAdminLoop();
-            else System.out.println("잘못된 입력입니다.");
-        }    }
+            if (mainChoice == 3) break;
 
-    private void inquiryMenuLoop() throws IOException {
+            if (mainChoice == 1) {
+                requestMenuLoop();
+            }
+            else if (mainChoice == 2) {
+                NoticeControllerImpl noticeController = new NoticeControllerImpl(true);
+                noticeController.run();
+            }
+            else System.out.println("잘못된 입력입니다.");
+        }
+    }
+
+    private void requestMenuLoop() throws IOException {
         while (true) {
             int choice = adminView.requestMenu();
-            if (choice == 3) break; // 뒤로가기
+            if (choice == 3) break;
             if (choice == 1) oneToOneAdminLoop();
             else if (choice == 2) boardAdminLoop();
             else System.out.println("잘못된 입력입니다.");
@@ -89,7 +95,7 @@ public class Request_Controller {
             } else if (choice == 3) {
                 int id = adminView.deleteRequest();
                 if (id > 0) {
-                    if (dao.deleteRequest(0, id) > 0) // 관리자 uid 무시
+                    if (dao.deleteRequest(0, id) > 0)
                         System.out.println("삭제 완료");
                     else System.out.println("삭제 실패");
                 }
@@ -97,13 +103,12 @@ public class Request_Controller {
         }
     }
 
-    // ---------------------- 사용자 메뉴 ----------------------
     private void userMenuLoop() throws IOException {
         while (true) {
             int mainChoice = userView.mainMenu();
             if (mainChoice == 3) break;
             if (mainChoice == 1) userRequestLoop();
-            else if (mainChoice == 2) { // 공지사항
+            else if (mainChoice == 2) {
                 NoticeControllerImpl noticeController = new NoticeControllerImpl(false);
                 noticeController.run();
             } else System.out.println("잘못된 입력입니다.");
@@ -125,14 +130,14 @@ public class Request_Controller {
             int choice = userView.requestBoardMenu();
             if (choice == 6) break;
             switch (choice) {
-                case 1 -> { // 글쓰기
+                case 1 -> {
                     Request req = userView.createRequest();
                     req.setUid(userId);
                     req.setR_type(RequestType.board);
                     int id = dao.createRequest(req);
                     System.out.println(id > 0 ? "등록 완료, ID: " + id : "등록 실패");
                 }
-                case 2 -> { // 글 수정
+                case 2 -> {
                     int id = userView.updateRequest();
                     if (id > 0) {
                         System.out.print("제목: "); String title = reader.readLine();
@@ -144,7 +149,7 @@ public class Request_Controller {
                 }
                 case 3 -> userView.selectAllRequest(dao.selectAllRequests(RequestType.board));
                 case 4 -> userView.selectMyRequest(dao.selectMyRequest(userId, RequestType.board));
-                case 5 -> { // 삭제
+                case 5 -> {
                     int id = userView.deleteRequest();
                     if (id > 0) {
                         if (dao.deleteRequest(userId, id) > 0) System.out.println("삭제 완료");
@@ -161,14 +166,14 @@ public class Request_Controller {
             int choice = userView.oneToOneMenu();
             if (choice == 5) break;
             switch (choice) {
-                case 1 -> { // 글쓰기
+                case 1 -> {
                     Request req = userView.createRequest();
                     req.setUid(userId);
                     req.setR_type(RequestType.onetoone);
                     int id = dao.createRequest(req);
                     System.out.println(id > 0 ? "등록 완료, ID: " + id : "등록 실패");
                 }
-                case 2 -> { // 글 수정
+                case 2 -> {
                     int id = userView.updateRequest();
                     if (id > 0) {
                         System.out.print("제목: "); String title = reader.readLine();
@@ -179,7 +184,7 @@ public class Request_Controller {
                     }
                 }
                 case 3 -> userView.selectMyRequest(dao.selectMyRequest(userId, RequestType.onetoone));
-                case 4 -> { // 삭제
+                case 4 -> {
                     int id = userView.deleteRequest();
                     if (id > 0) {
                         if (dao.deleteRequest(userId, id) > 0) System.out.println("삭제 완료");

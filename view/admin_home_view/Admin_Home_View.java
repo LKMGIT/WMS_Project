@@ -4,7 +4,9 @@ package view.admin_home_view;
 import controller.notice_controller.NoticeControllerImpl;
 import controller.request_controller.Request_Controller;
 import util.AppSession;
+
 import controller.warehouse_controller.WarehouseMain_Controller_Impl;
+
 import view.inventory_view.InventoryAdminView;
 import view.member_view.AdminView;
 import view.request_view.RequestAdminView;
@@ -47,6 +49,7 @@ public class Admin_Home_View {
             case 1 -> adminView.adminMenu();
 
 
+
             case 2 -> {
                 boolean runMenu = true;
                 while (runMenu) {
@@ -69,6 +72,7 @@ public class Admin_Home_View {
             case 6 -> WarehouseMain_Controller_Impl.getInstance().start();
             case 7 -> {
                 break;
+
             }
         }
     }

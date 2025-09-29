@@ -4,10 +4,7 @@ import model.request_service.NoticeDAO;
 import view.notice_view.NoticeAdminView;
 import view.notice_view.NoticeUserView;
 import vo.Requests.Notice;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 public class NoticeControllerImpl implements Notice_Controller {
@@ -16,7 +13,6 @@ public class NoticeControllerImpl implements Notice_Controller {
     private final NoticeUserView userView;
     private final NoticeDAO dao;
     private final boolean isAdmin;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public NoticeControllerImpl(boolean isAdmin) {
         this.adminView = new NoticeAdminView();
@@ -25,12 +21,12 @@ public class NoticeControllerImpl implements Notice_Controller {
         this.isAdmin = isAdmin;
     }
 
-    public void run() throws IOException {
+    public void run() {
         if (isAdmin) adminMenuLoop();
         else userMenuLoop();
     }
 
-    private void adminMenuLoop() throws IOException {
+    private void adminMenuLoop() {
         while (true) {
             int choice = adminView.noticeAdminMenu();
             switch (choice) {
@@ -39,77 +35,52 @@ public class NoticeControllerImpl implements Notice_Controller {
                 case 3 -> deleteNotice();
                 case 4 -> selectAll();
                 case 5 -> selectNotice();
-                case 6 -> {
-                    System.out.println("뒤로갑니다.");
-                    return;
-                }
-                default -> System.out.println("잘못된 입력입니다.");
+                case 6 -> { System.out.println("뒤로갑니다."); return; }
             }
         }
     }
 
-    private void userMenuLoop() throws IOException {
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    private void userMenuLoop() {
         while (true) {
             int choice = userView.noticeUserMenu();
             switch (choice) {
                 case 1 -> selectAll();
                 case 2 -> selectNotice();
-                case 3 -> {
-                    System.out.println("뒤로갑니다.");
-                    return;
-                }
-                default -> System.out.println("잘못된 입력입니다.");
+                case 3 -> { System.out.println("뒤로갑니다."); return; }
             }
         }
     }
 
-
     @Override
     public int createNotice() {
-        try {
-            Notice notice = adminView.createNotice();
-            int result = dao.createNotice(notice);
-            System.out.println(result > 0 ? "공지 작성 완료" : "공지 작성 실패");
-            return result;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        Notice notice = adminView.createNotice();
+        int result = dao.createNotice(notice);
+        System.out.println(result > 0 ? "공지 작성 완료" : "공지 작성 실패");
+        return result;
     }
 
     @Override
     public int updateNotice() {
-        try {
-            int noticeID = adminView.inputNoticeID("수정");
-            Notice existing = dao.selectNotice(noticeID);
-            if (existing == null) {
-                System.out.println("공지 존재하지 않음");
-                return 0;
-            }
-
-            Notice updated = adminView.createNotice();
-            updated.setNoticeID(noticeID);
-            int result = dao.updateNotice(updated);
-            System.out.println(result > 0 ? "공지 수정 완료!" : "공지 수정 실패!");
-            return result;
-        } catch (IOException e) {
-            e.printStackTrace();
+        int noticeID = adminView.inputNoticeID("수정");
+        Notice existing = dao.selectNotice(noticeID);
+        if (existing == null) {
+            System.out.println("공지 존재하지 않음");
             return 0;
         }
+
+        Notice updated = adminView.createNotice();
+        updated.setNoticeID(noticeID);
+        int result = dao.updateNotice(updated);
+        System.out.println(result > 0 ? "공지 수정 완료" : "공지 수정 실패");
+        return result;
     }
 
     @Override
     public int deleteNotice() {
-        try {
-            int noticeID = adminView.inputNoticeID("삭제");
-            int result = dao.deleteNotice(noticeID);
-            System.out.println(result > 0 ? "공지 삭제 완료" : "공지 삭제 실패");
-            return result;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        int noticeID = adminView.inputNoticeID("삭제");
+        int result = dao.deleteNotice(noticeID);
+        System.out.println(result > 0 ? "공지 삭제 완료" : "공지 삭제 실패");
+        return result;
     }
 
     @Override
@@ -121,29 +92,12 @@ public class NoticeControllerImpl implements Notice_Controller {
 
     @Override
     public void selectNotice() {
-        try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-            int noticeID;
-            if (isAdmin) {
-                noticeID = adminView.inputNoticeID("조회");
-            } else {
-                while (true) {
-                    System.out.print("조회할 공지 ID를 입력해주세요: ");
-                    try {
-                        noticeID = Integer.parseInt(input.readLine().trim());
-                        break;
-                    } catch (NumberFormatException e) {
-                        System.out.println("ID는 숫자로 입력해주세요.");
-                    }
-                }
-            }
+        int noticeID;
+        if (isAdmin) noticeID = adminView.inputNoticeID("조회");
+        else noticeID = dao.selectAll().isEmpty() ? 0 : adminView.inputNoticeID("조회");
 
-            Notice notice = dao.selectNotice(noticeID);
-            if (isAdmin) adminView.selectNotice(notice);
-            else userView.selectNotice(notice);
-
-        } catch (IOException e) {
-            System.out.println("잘못된 입력입니다.");
-        }
+        Notice notice = dao.selectNotice(noticeID);
+        if (isAdmin) adminView.selectNotice(notice);
+        else userView.selectNotice(notice);
     }
 }

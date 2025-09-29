@@ -34,7 +34,7 @@ public class NoticeDAO {
 
     // 공지 수정
     public int updateNotice(Notice notice) {
-        String sql = "UPDATE notice SET n_title = ?, n_content = ?, n_updateAt = NOW(), n_priority = ? WHERE noticeID = ?";
+        String sql = "UPDATE Notice SET n_title = ?, n_content = ?, n_updateAt = NOW(), n_priority = ? WHERE noticeID = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -52,7 +52,7 @@ public class NoticeDAO {
 
     // 공지 삭제
     public int deleteNotice(int noticeID) {
-        String sql = "DELETE FROM notice WHERE noticeID = ?";
+        String sql = "DELETE FROM Notice WHERE noticeID = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
