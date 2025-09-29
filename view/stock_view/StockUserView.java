@@ -110,11 +110,13 @@ public class StockUserView {
             item.setCategory(category);
 
             // Stock 객체 생성 및 Item 정보 세팅
+            // 나머지는 사용자가 입력한 값을 넣지만 Process는 승인대기를 기본값으로 저장
             Stock stock = new Stock();
             stock.setUID(userID);
             stock.setStock_p_quantity(stock_p_quantity);
-            stock.setStockingProcess("승인대기");  // 기본 상태
+            stock.setStockingProcess("승인대기");
 
+            // 위에 입력한 값들 result에 담아서 controller로 전송
             Stock_User_Controller controller = new Stock_User_Controller(); // 실제 컨트롤러/DAO 객체
             int result = controller.stockRequest(item, stock);
 

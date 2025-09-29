@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 public class Stock_User_Controller implements  Stock_User_Controller_Interface{
 
+    // view에서 받은 거를가지고 DAO호출
     StockDAO_User sUser = new StockDAO_User();
 
 

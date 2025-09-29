@@ -127,6 +127,7 @@ DELIMITER ;
 
 
 
+
 -- 입고고지서 조회 (승인 된것만)
 DROP PROCEDURE IF EXISTS sp_stockPrint;
 DELIMITER $$
@@ -299,3 +300,67 @@ END$$
 DELIMITER ;
 
 
+
+
+
+create table if not exists railway.shipment
+(
+    shipmentID          int auto_increment
+        primary key,
+    shippingDate        date        null,
+    Shipping_p_quantity int         null,
+    shippingProcess     varchar(20) null,
+    waybill             varchar(50) null,
+    uid                 int         null,
+    itemID              int         null,
+    warehouseID         int         null,
+    constraint shipment_ibfk_1
+        foreign key (uid) references railway.Users (uID),
+    constraint shipment_ibfk_2
+        foreign key (itemID) references railway.Item (itemID)
+);
+
+
+
+
+
+create table if not exists railway.Stock
+(
+    stockID          int auto_increment
+        primary key,
+    stockingDate     date        null,
+    stockingProcess  varchar(20) not null,
+    stock_p_quantity int         not null,
+    itemID           int         not null,
+    warehouseID      int         null,
+    sectionID        int         null,
+    uID              int         not null,
+    constraint FK_stock_item
+        foreign key (itemID) references railway.Item (itemID)
+            on delete cascade
+);
+
+
+
+
+
+
+
+
+create table if not exists railway.Item
+(
+    itemID       int auto_increment
+        primary key,
+    itemName     varchar(100)   not null,
+    itemPrice    int            not null,
+    weight       int            not null,
+    assemble     varchar(50)    not null,
+    customerName varchar(50)    not null,
+    material     varchar(50)    not null,
+    volume       decimal(10, 3) as (((`width` * `height`) * `levelHeight`)) stored,
+    width        decimal(10, 2) not null,
+    height       decimal(10, 2) not null comment '부피를 구하기 위한 세로',
+    levelHeight  decimal(10, 2) not null comment '부피를 구하기 위한 높이',
+    spaceName    varchar(50)    not null,
+    category     varchar(50)    not null
+);
