@@ -76,7 +76,7 @@ public class Warehouse_Controller_Impl implements Warehouse_Controller {
                 selectAllWarehouse();
                 break;
             case 2: // 소재지(도시)로 조회
-                String location = warehouseAdminView.getInput("검색할 소재자(도시) 이름: ");
+                String location = warehouseAdminView.getInput("검색할 소재지(도시) 이름: ");
                 selectByLocation(location);
                 break;
             case 3: // 창고명으로 조회

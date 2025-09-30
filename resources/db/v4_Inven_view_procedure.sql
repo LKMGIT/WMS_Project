@@ -1,28 +1,49 @@
 -- 조회에 사용될 뷰
-create view invenwareitem as 
-SELECT
-i.itemid, i.itemname, i.itemprice, i.weight,i.assemble ,customername, i.material, i.volume, i.spacename, i.category,
-inv.eid, inv.quantity, inv.stockdate,inv.shipdate,
-w.warehouseid, w.warehousename,w.warehouseaddress, w.warehousestatus, w.warehousecityname,w.maxcapacity, w.mid,
-ws.sectionid,ws.sectionname,ws.maxvol,ws.currentvol
-FROM
-    Inventory inv
-JOIN
-    Warehouse w ON inv.warehouseID = w.warehouseID
-JOIN
-    Item i ON inv.itemID = i.itemID
-JOIN
-	warehousesection ws on ws.warehouseID = w.warehouseID and ws.sectionID = inv.sectionid;
+create view invenwareitem as
+SELECT i.itemid,
+       i.itemname,
+       i.itemprice,
+       i.weight,
+       i.assemble,
+       customername,
+       i.material,
+       i.volume,
+       i.spacename,
+       i.category,
+       inv.eid,
+       inv.quantity,
+       inv.stockdate,
+       inv.shipdate,
+       w.warehouseid,
+       w.warehousename,
+       w.warehouseaddress,
+       w.warehousestatus,
+       w.warehousecityname,
+       w.maxcapacity,
+       w.mid,
+       ws.sectionid,
+       ws.sectionname,
+       ws.maxvol,
+       ws.currentvol
+FROM Inventory inv
+         JOIN
+     Warehouse w ON inv.warehouseID = w.warehouseID
+         JOIN
+     Item i ON inv.itemID = i.itemID
+         JOIN
+     warehousesection ws on ws.warehouseID = w.warehouseID and ws.sectionID = inv.sectionid;
 
 
 -- 관리자가 입고 승인하면 재고 테이블에 데이터가 들어가는 트리거
 delimiter ##
 create trigger insert_inventory
-after update on stock
-for each row
+    after update
+    on stock
+    for each row
 begin
-	if new.stockingProcess = '승인' then
-    insert into inventory (quantity,warehouseid,sectionid,itemid,stockdate) values ( NEW.stock_p_quantity, NEW.warehouseid, NEW.sectionid,  NEW.itemid, NEW.stockingDate );     
+    if new.stockingProcess = '승인' then
+        insert into inventory (quantity, warehouseid, sectionid, itemid, stockdate)
+        values (NEW.stock_p_quantity, NEW.warehouseid, NEW.sectionid, NEW.itemid, NEW.stockingDate);
     end if;
 end ##
 delimiter ;
@@ -45,16 +66,18 @@ BEGIN
     DECLARE stock_cursor CURSOR FOR
         SELECT eID, quantity
         FROM Inventory
-        WHERE itemID = v_item_id AND quantity > 0
+        WHERE itemID = v_item_id
+          AND quantity > 0
         ORDER BY stockDate ASC
-        FOR UPDATE;
+            FOR
+        UPDATE;
     -- 3. 에러 핸들러 및 트랜잭션 설정
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
+        BEGIN
+            ROLLBACK;
+            RESIGNAL;
+        END;
     START TRANSACTION;
     -- 4. 출고 요청 정보 조회
     SELECT itemID, shipping_p_quantity, shipppingProcess, shippingDate
@@ -68,7 +91,8 @@ BEGIN
     SET v_remaining_to_ship = v_requested_qty;
     -- 5. 재고 차감 로직 실행
     OPEN stock_cursor;
-    read_loop: LOOP
+    read_loop:
+    LOOP
         FETCH stock_cursor INTO v_lot_eid, v_lot_qty;
         IF done OR v_remaining_to_ship <= 0 THEN
             LEAVE read_loop;
@@ -76,16 +100,14 @@ BEGIN
         IF v_lot_qty >= v_remaining_to_ship THEN
             -- 현재 재고로 충분할 때
             UPDATE Inventory
-            SET 
-                quantity = quantity - v_remaining_to_ship,
+            SET quantity = quantity - v_remaining_to_ship,
                 shipDate = v_ship_date -- << 3. 수정된 부분: 일부만 출고돼도 날짜 기록
             WHERE eID = v_lot_eid;
             SET v_remaining_to_ship = 0;
         ELSE
             -- 현재 재고를 모두 소진해도 부족할 때
             UPDATE Inventory
-            SET 
-                quantity = 0, 
+            SET quantity = 0,
                 shipDate = v_ship_date -- << 3. 수정된 부분: 올바른 날짜 변수 사용
             WHERE eID = v_lot_eid;
             SET v_remaining_to_ship = v_remaining_to_ship - v_lot_qty;

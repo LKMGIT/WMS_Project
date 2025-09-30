@@ -100,7 +100,9 @@ public class Warehouse_Section_Controller_Impl implements Warehouse_Section_Cont
         System.out.println("\n[창고 구역 등록]");
 
         // 어느 창고에 등록할지 ID를 먼저 받음
-        int warehouseId = sectionAdminView.getWarehouseIdInput();
+        // int warehouseId = sectionAdminView.getWarehouseIdInput();
+        int warehouseId = sectionAdminView.getIntInput("구역을 등록할 창고 ID를 입력하세요: ");
+
 
         // 관리자가 'n'을 누를 때까지 구역 추가를 반복
         while (true) {
@@ -129,7 +131,7 @@ public class Warehouse_Section_Controller_Impl implements Warehouse_Section_Cont
             } else if (resultCode == -1) { // 용량 부족
                 sectionAdminView.displayError("용량이 부족하여 등록할 수 없습니다.");
                 sectionAdminView.displayMessage("[현재 남은 수용량: " + remainingCapacity + "]");
-                continue; // 용량이 부족하면 재입력
+                break; // 용량이 부족하면 상위 메뉴로 이동
             } else { // 기타 DB 오류
                 sectionAdminView.displayError("구역 등록에 실패했습니다.");
                 break;

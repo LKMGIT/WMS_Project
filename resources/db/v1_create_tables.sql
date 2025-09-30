@@ -83,25 +83,13 @@ CREATE TABLE IF NOT EXISTS Notice
 DROP TABLE if exists Warehouse;
 CREATE TABLE IF NOT EXISTS Warehouse
 (
-    warehouseID
-                      INT
-                                   NOT
-                                       NULL
-        AUTO_INCREMENT,
-    warehouseName
-                      VARCHAR(50)  NOT NULL,
+    warehouseID INT NOT NULL AUTO_INCREMENT,
+    warehouseName VARCHAR(50)  NOT NULL,
     warehouseAddress  VARCHAR(255) NOT NULL,
     warehouseStatus   VARCHAR(20)  NOT NULL,
     warehouseCityName VARCHAR(50)  NOT NULL,
     -- maxCapacity       INT          NOT NULL,
-    maxCapacity       INT AS
-        (
-        warehouseArea
-            *
-        floorHeight
-            *
-        0.9
-        ) STORED                   NOT NULL COMMENT '창고 최대 수용량',
+    maxCapacity       INT AS ( warehouseArea * floorHeight * 0.9 ) STORED NOT NULL COMMENT '창고 최대 수용량',
     warehouseArea     INT          NOT NULL,
     regDate           DATE         NOT NULL DEFAULT
                                                 (
