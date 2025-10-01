@@ -46,6 +46,30 @@ WMS_Project
     └── ...(DBConnection)
 ```
 
+## 🌊전체 흐름
+```
+[사용자/클라이언트(User)]
+      │ (요청: 로그인/입고요청/재고조회 등)
+      ▼
+[Controller] ── 입력검증 / 권한확인(AppSession.isUser)
+      │ DTO/VO
+      ▼
+[Service(내부로직)]  ← 규칙/검증/트랜잭션 경계
+      │ DAO 호출
+      ▼
+[DAO/Repository] ── SQL / Stored Procedure 실행
+      │ JDBC Result
+      ▼
+[Database] (테이블/뷰/프로시저)
+      │ 결과셋
+      ▲
+   VO 매핑/가공 (User 관점 필터링)
+      ▲
+[Controller] ── 응답 변환(View/JSON/메시지)
+      ▲
+[사용자/클라이언트(User)]
+
+```
 
 ## 💾 데이터베이스 주요 테이블
 - **Users**: 사용자 정보 및 권한(Role)  
